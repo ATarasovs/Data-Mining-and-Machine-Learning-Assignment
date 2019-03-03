@@ -3,7 +3,7 @@ clc;
 clear;
 
 % load data
-load AC50001_assignment2_data.mat;
+load ../AC50001_assignment2_data.mat;
 
 % combine all data together
 data = [digit_one digit_five digit_eight];
