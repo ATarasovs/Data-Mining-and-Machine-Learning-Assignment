@@ -2,6 +2,8 @@
 % and assign each node to the closest centroid
 function [grid, clusterAssignments] = setGrid(pcaScore)
 
+    rng(1); % For reproducibility 
+    
     % Perform k-means clustering to partition the observations
    [idx, C] = kmeans(pcaScore,3);
 

@@ -1,20 +1,18 @@
 function [pcaScore] = getPcaScore(data)
-
-    % get mean values for 
+   
+    % Produce a mean vector from data
     meanData = mean(data);
 
-    newData = [];
+    % Produce zero mean data matrix
+    data = data - repmat(meanData, size(data,1), 1);
+    
+    % Calculate covariance matrix
+    covariance = cov(data);
 
-    for n = 1:300
-        for k = 1:784
-            newData(n,k) = data(n,k) - meanData(n);
-        end
-    end
-
-    covariance = cov(newData);
-
+    % Calculate eigenvalues and eigenvectors
     [v,d] = eigs(covariance);
 
-    pcaScore = newData*v(:,[1 2]);
+    % Calculate PCA score
+    pcaScore = data*v(:,1:2);
 end
 

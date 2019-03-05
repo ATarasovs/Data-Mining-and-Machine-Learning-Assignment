@@ -10,7 +10,7 @@ function [] = drawSecondGraph(idx, pcaScore, c)
          'MarkerSize',15,'LineWidth',3)
     xlabel 'Dimension 1';
     ylabel 'Dimension 2';
-    legend('One','Five','Eight','Centroids','Location','NorthEast');
-    title 'MNIST digits'
+    legend('Cluster 1','Cluster 2','Cluster 3','Centroids','Location','NorthEast');
+    title 'PCA - MNIST digits';
     hold off
 end

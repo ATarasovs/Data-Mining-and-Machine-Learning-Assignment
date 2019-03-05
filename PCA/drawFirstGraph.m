@@ -5,10 +5,10 @@ function [] = drawFirstGraph(grid, clusterAssignments, pcaScore)
         [0,0.75,0.75;0.75,0,0.75;0.75,0.75,0],'..');
     hold on;
     plot(pcaScore(:,1),pcaScore(:,2),'k*','MarkerSize',5);
-    title 'MNIST digits';
+    title 'PCA - MNIST digits';
     xlabel 'Dimension 1';
     ylabel 'Dimension 2';
-    legend('One','Five','Eight','Data points','Location','NorthEast');
+    legend('Region 1','Region 2','Region 3','Data points','Location','NorthEast');
     hold off;    
 end
 
