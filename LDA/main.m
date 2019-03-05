@@ -33,18 +33,14 @@ mu5 = mean(digit5);
 mu8 = mean(digit8);
 
 % Calculate verall mean
-mu = (mu1 + mu5 + mu8)./3;
+% mu = (mu1 + mu5 + mu8)./3;
 
 % Calculate within class scatter matrix
 sw = cov(digit1) + cov(digit5) + cov(digit8);
+sw = sw + 0.00001*eye(size(sw));
 
-v = sw^(-1) * (mu1 - mu5 - mu8)';
-sw2 = sw^(-1);
-
-ldaScore = data*v;
-gscatter(ldaScore(:,1), ldaScore(:,1))
-
-x1 = ldaScore(dataLabels==1);
+v = inv(sw) * (mu1 - mu5 - mu8)';
+ldaScore = data * v;
 
 % classSize = 100;
 
