@@ -81,6 +81,10 @@ figure;
 plotconfusion(testLabelVector',linearLabel');
 title('Confusion matrix for SVM with Linear Kernel');
 
+% Create results table
+linearReultsTable = table(testLabelVector,double(linearLabel),linearScore(:,2),'VariableNames',...
+    {'TrueLabel','PredictedLabel','Score'});
+
 % Plot ROC curve for SVM with RBF kernel
 figure
 plot(rbfX,rbfY)
@@ -92,4 +96,8 @@ title('ROC Curve for SVM with RBF Kernel')
 figure;
 plotconfusion(testLabelVector',rbfLabel');
 title('Confusion matrix for SVM with RBF Kernel');
+
+% Create results table
+rbfReultsTable = table(testLabelVector,double(rbfLabel),linearScore(:,2),'VariableNames',...
+    {'TrueLabel','PredictedLabel','Score'});
 
