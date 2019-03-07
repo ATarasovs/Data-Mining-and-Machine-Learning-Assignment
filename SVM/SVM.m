@@ -58,8 +58,8 @@ testInstanceMatrix = data(:,teIdx);
 model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 0');
 
 % Classification on test data
-decValues = svmpredict(testLabelVector, ...
-                                   testInstanceMatrix', model);
+[predictLabel, accuracy, decValues] = svmpredict(...
+            testLabelVector,testInstanceMatrix', model);
                                
 % Draw ROC curve
 [X,Y,T,AUC] = perfcurve(testLabelVector, decValues, false);
