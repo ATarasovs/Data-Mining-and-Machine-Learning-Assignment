@@ -7,7 +7,6 @@ load ../AC50001_assignment2_data.mat;
 
 % Seperate data in two classes
 data = [digit_one digit_five digit_eight];
-% data(300:784,:) = [];
 dataLabels = [];
 
 %Assign labels
@@ -29,9 +28,10 @@ for n = 1:max(size(dataLabels))
     dataClasses = [dataClasses; isequal(dataLabels(n), '5')];
 end
 
-cvo = cvpartition(dataClasses,'k',10);
+% Split data for 2-fold cross validation
+cvo = cvpartition(dataClasses,'k',5);
 
-% Get indexes for training and testing samples
+% Get ndexes for training and testing samples
 trIdx = cvo.training(1); 
 teIdx = cvo.test(1); 
 
@@ -39,31 +39,38 @@ teIdx = cvo.test(1);
 trainingLabelVector = dataClasses(trIdx); 
 
 % Training data matrix
-trainingInstanceMatrix = data(:,trIdx)'; 
+trainingInstanceMatrix = data(:,trIdx); 
 
 % Test label ground truth
 testLabelVector = dataClasses(teIdx); 
 
 % Test data matrix
-testInstanceMatrix = data(:,teIdx)';
+testInstanceMatrix = data(:,teIdx);
 
-trainingLabelVector=logical(trainingLabelVector);
-model = fitcsvm(trainingInstanceMatrix, trainingLabelVector,'KernelFunction','linear');
-crossValModel = crossval(model, 'KFold', 5);
-CompactSVMModel = crossValModel.Trained{1};
-accuracy = 1 - kfoldLoss(crossValModel, 'LossFun', 'ClassifError');
-[label,score] = predict(CompactSVMModel,testInstanceMatrix);
-[x1,y1,t1s,auc1] = perfcurve(testLabelVector,score(:,CompactSVMModel.ClassNames),'1');
+% Train model using RBF kernel
+% model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 1 -g 0.07');
+% model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 1 -g 0.07');
+% model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 1 -g 0.01');
+% model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 1 -g 0.20');
+% model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 1 -g 0.99');
 
-figure
-hold on
-plot(x1,y1)
-legend('Support Vector Machines','Location','Best')
-xlabel('False positive rate'); ylabel('True positive rate');
-title('ROC Curve for SVM')
-hold off
+% Train model using linear kernel
+model = svmtrain(trainingLabelVector, trainingInstanceMatrix', '-t 0');
 
+% Classification on test data
+decValues = svmpredict(testLabelVector, ...
+                                   testInstanceMatrix', model);
+                               
+% Draw ROC curve
+[X,Y,T,AUC] = perfcurve(testLabelVector, decValues, false);
 figure;
-plotconfusion(testLabelVector',label');
-hold off;
+plot(X,Y);
+xlabel('False positive rate') 
+ylabel('True positive rate')
+title('ROC Curve for Linear SVM')
+hold on;
 
+% Plot confusion matrix
+figure;
+plotconfusion(testLabelVector',predictLabel');
+hold off;
