@@ -24,4 +24,5 @@ drawFirstGraph(grid, clusterAssignments, pcaScore);
 % Function to plot the clusters and the cluster centroids
 drawSecondGraph(idx, pcaScore, c);
 
+% Function to plot data points after PCA projection
 drawThirdGraph(pcaScore);

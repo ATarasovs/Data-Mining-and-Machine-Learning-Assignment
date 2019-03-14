@@ -1,4 +1,4 @@
-% Plot the clusters and the cluster centroids.
+% Function to plot data points after PCA projection
 function [] = drawThirdGraph(pcaScore)
     figure;
     scatter(pcaScore(1:100,1), pcaScore(1:100,2),'Marker','x');
