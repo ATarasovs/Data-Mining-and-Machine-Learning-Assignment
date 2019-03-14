@@ -31,7 +31,7 @@ end
 % Split data for 2-fold cross validation
 cvo = cvpartition(dataClasses,'k',5);
 
-% Get ndexes for training and testing samples
+% Get indexes for training and testing samples
 trIdx = cvo.training(1); 
 teIdx = cvo.test(1); 
 

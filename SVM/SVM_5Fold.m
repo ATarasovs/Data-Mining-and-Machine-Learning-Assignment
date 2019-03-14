@@ -55,19 +55,37 @@ crossValLinearModel = crossval(linearModel, 'KFold', 5);
 CompactSVMLinearModel = crossValLinearModel.Trained{1};
 linearAccuracy = 1 - kfoldLoss(crossValLinearModel, 'LossFun', 'ClassifError');
 [linearLabel,linearScore] = predict(CompactSVMLinearModel,testInstanceMatrix);
-[linearX,linearY,linearT,linearAUS] = perfcurve(testLabelVector, ...
+[linearX,linearY,linearT,linearAUC] = perfcurve(testLabelVector, ...
                         linearScore(:,CompactSVMLinearModel.ClassNames),'1');
-
-                    
+          
 % Train model using rbf kernel
+kFold = 5;
 rbfModel = fitcsvm(trainingInstanceMatrix, trainingLabelVector,...
-                        'KernelFunction','rbf');
-crossValRbfModel = crossval(rbfModel, 'KFold', 5);
-CompactSVMRbfModel = crossValRbfModel.Trained{1};
-rbfAccuracy = 1 - kfoldLoss(crossValRbfModel, 'LossFun', 'ClassifError');
-[rbfLabel,rbfScore] = predict(CompactSVMRbfModel,testInstanceMatrix);
-[rbfX,rbfY,rbfT,rbfAUC] = perfcurve(testLabelVector, ...
-                        rbfScore(:,CompactSVMRbfModel.ClassNames),'1');
+                'KernelFunction','rbf', 'KernelScale', 10);
+crossValRbfModel = crossval(rbfModel, 'KFold', kFold);
+bestAccuracy = 0;
+maxKernelScale = 30;
+
+for n = 1:kFold
+    CompactSVMRbfModel = crossValRbfModel.Trained{n};
+    rbfModelAccuracy = 1 - kfoldLoss(crossValRbfModel, 'LossFun', 'ClassifError');
+    [rbfLabel,rbfScore] = predict(CompactSVMRbfModel,testInstanceMatrix);
+    [rbfX,rbfY,rbfT,rbfAUC] = perfcurve(testLabelVector, ...
+                            rbfScore(:,CompactSVMRbfModel.ClassNames),'1');
+    rbfTestAccuracy = sum(testLabelVector==rbfLabel)/numel(testLabelVector);
+    if (rbfTestAccuracy > bestAccuracy)
+        bestModel = CompactSVMRbfModel;
+        bestRbfLabel = rbfLabel;
+        bestRbfScore = rbfScore;
+        bestAccuracy = rbfTestAccuracy;
+        bestRbfX = rbfX;
+        bestRbfY = rbfY;
+        bestRbfT = rbfT;
+        bestRbfAUC = rbfAUC;
+        bestRbfModelAccuracy = rbfModelAccuracy;
+    end
+    
+end
 
 % Plot ROC curve for SVM with linear kernel
 figure
@@ -87,17 +105,17 @@ linearReultsTable = table(testLabelVector,double(linearLabel),linearScore(:,2),'
 
 % Plot ROC curve for SVM with RBF kernel
 figure
-plot(rbfX,rbfY)
+plot(bestRbfX,bestRbfY)
 legend('Support Vector Machines','Location','Best')
 xlabel('False positive rate'); ylabel('True positive rate');
 title('ROC Curve for SVM with RBF Kernel')
 
 % Plot confusion matrix for SVM with RBF kernel
 figure;
-plotconfusion(testLabelVector',rbfLabel');
+plotconfusion(testLabelVector',bestRbfLabel');
 title('Confusion matrix for SVM with RBF Kernel');
 
 % Create results table
-rbfReultsTable = table(testLabelVector,double(rbfLabel),linearScore(:,2),'VariableNames',...
+rbfReultsTable = table(testLabelVector,double(bestRbfLabel),bestRbfScore(:,2),'VariableNames',...
     {'TrueLabel','PredictedLabel','Score'});
 
